@@ -1,7 +1,11 @@
-from loader import bot
-import handlers  # noqa
-from utils.set_bot_commands import set_default_commands
+from aiogram import executor
+from telegram import dp
 
-if __name__ == "__main__":
-    set_default_commands(bot)
-    bot.infinity_polling()
+if __name__ == '__main__':
+    """
+    Функция, запускающая бота
+
+    Параметры:
+        - dp: Dispatcher объект из aiogram, отвечающий за обработку обновлений.
+    """
+    executor.start_polling(dp)
