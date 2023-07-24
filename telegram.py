@@ -18,6 +18,18 @@ dp.middleware.setup(LoggingMiddleware())
 # Словарь для хранения истории запросов пользователей
 user_history = {}
 
+# Текст кнопки 'Помощь' и /help
+help_text = (
+    "Для того, чтобы получить информацию о погоде, "
+    "введите название города или отправьте мне Вашу геолокацию.\n\n"
+    "Для отправки геолокации:"
+    "\n- на мобидьном устройсве нажмите на кнопку 'Отправить геолокацию'"
+    "\n- на ПК нажмите на скрепку в нижнем левом углу, потом нажмите на кнопку 'Местоположение'\n\n"
+    "Я предоставлю вам прогноз погоды на сегодня, "
+    "завтра и неделю вперед.\n\n"
+    "Вы также сможете увидеть историю своих запросов."
+)
+
 
 def add_to_history(user_id, city):
     """
@@ -34,6 +46,11 @@ def add_to_history(user_id, city):
     if user_id not in user_history:
         user_history[user_id] = []
     user_history[user_id].append((city, timestamp))
+
+
+@dp.message_handler(commands=['help'])
+async def help_handler(message: types.Message):
+    await message.reply(help_text)
 
 
 @dp.message_handler(commands=['start'])
@@ -71,16 +88,6 @@ async def send_help_message(chat_id):
     Возвращаемое значение:
         :return: None
     """
-    help_text = (
-        "Для того, чтобы получить информацию о погоде, "
-        "введите название города или отправьте мне Вашу геолокацию.\n\n"
-        "Для отправки геолокации нажмите на кнопку "
-        "'Отправить геолокацию' или используйте прикрепление "
-        "и выберите 'Геопозиция', отправить свою геолокацию.\n\n"
-        "Я предоставлю вам прогноз погоды на сегодня, "
-        "завтра и неделю вперед.\n\n"
-        "Вы также сможете увидеть историю своих запросов."
-    )
 
     location_button = KeyboardButton(
         "Отправить геолокацию", request_location=True)
@@ -160,6 +167,7 @@ async def process_city(message: types.Message):
         :return: None
     """
     city = message.text
+
     weather_data = await get_weather(city)
 
     if not weather_data:

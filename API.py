@@ -1,5 +1,7 @@
+import geonamescache
 from aiohttp import ClientSession
 from datetime import datetime, timedelta
+
 
 from config import OPENWEATHERMAP_API_KEY
 
@@ -129,13 +131,15 @@ def format_forecast(data, days=1):
 
     Параметры:
         :param data: Данные о прогнозе погоды.
-        :param days: (целое число): Количество дней прогноза (по умолчанию 1).
+        :param days: Количество дней прогноза (по умолчанию 1), int.
 
     Возвращаемое значение:
         :return: Строка с форматированными данными о прогнозе погоды, str.
     """
     city = data['city']['name']
     weather_list = data['list']
+    country = data['city']['country']
+    country = get_country_name(country)
 
     if days == 1:
         period = "сегодня"
@@ -144,7 +148,7 @@ def format_forecast(data, days=1):
     else:
         period = f"следующие {days} дней"
 
-    forecast_str = f"Прогноз погоды в {city} на {period}:\n"
+    forecast_str = f"Прогноз погоды в {city}, {country} на {period}:\n"
 
     city_sunrise = datetime.fromtimestamp(
         data['city']['sunrise']).strftime('%H:%M')
@@ -171,3 +175,14 @@ def format_forecast(data, days=1):
                          f"Хорошего дня! 🙂\n\n")
 
     return forecast_str
+
+
+def get_country_name(country_code):
+    gc = geonamescache.GeonamesCache()
+    countries = gc.get_countries()
+
+    if country_code in countries:
+        country_name = countries[country_code]['name']
+        return country_name
+
+    return None

@@ -1,2 +1,4 @@
 aiohttp~=3.8.5
 aiogram~=2.25.1
+geonamescache~=2.0.0
+googletrans~=3.0.0
